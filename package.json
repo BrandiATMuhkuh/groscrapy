@@ -1,0 +1,13 @@
+{
+  "name"         : "node-product-scaper",
+  "version"      : "0.0.1",
+  "description"  : "scrap web for products and prices",
+  "main"         : "server.js",
+  "author"       : "BrandiATMuhkuh",
+  "dependencies" : {
+    "phantom"    : "latest",
+    "cheerio"    : "latest",
+    "jsonml"    : "latest",
+    "node-serialize" : "latest"
+  }
+}
