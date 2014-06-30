@@ -1,0 +1,21 @@
+{
+	"type": "Collection",
+	"properties": {
+		"link": {
+			"name": "link",
+			"type": "string",
+			"typeLabel": "string",
+			"required": false,
+			"id": "link",
+			"order": 0
+		},
+		"maxpages": {
+			"name": "maxpages",
+			"type": "number",
+			"typeLabel": "number",
+			"required": false,
+			"id": "maxpages",
+			"order": 1
+		}
+	}
+}
