@@ -1,4 +1,10 @@
 var phantom = require('phantom');
+var deployd = require('deployd');
+var config = require('./config.json');
+var internalClient = require('deployd/lib/internal-client');
+var dpd = deployd(config.deployd);
+var globalSock;
+var ic;
 var fs = require('fs');
 var domain = "http://shop.countdown.co.nz";
 var startLink = domain+"/Shop/Aisle/275?name=unsliced-bread";
@@ -6,9 +12,21 @@ var phCount = -1;
 var mxRequests = 0;
 var pagesPlusEnd = [];
 
-phantom.create(function(ph) {
-    return countDownLevel1(ph);
+dpd.listen();
+
+//start deployd
+dpd.sockets.on('connection', function (socket) {
+    ic = internalClient.build(process.server);
+    globalSock = socket;
+        
+
+    //start phantom
+    phantom.create(function(ph) {
+        return countDownLevel1(ph);
+    });
 });
+
+
 
 function incPh(){
     console.log('incPh', phCount);
@@ -30,6 +48,17 @@ function decPh(ph){
 }
 
 function writeToFile(){
+
+    for(a in pagesPlusEnd){
+        ic.catgorylist.post({
+            "link": pagesPlusEnd[a].link, 
+            "maxpages": pagesPlusEnd[a].end}, 
+            function(result2, err) {}
+        );
+    }
+
+    
+
     fs.writeFile("productListPages.json", JSON.stringify(pagesPlusEnd),null);
 }
 

@@ -8,6 +8,7 @@
     "phantom"    : "latest",
     "cheerio"    : "latest",
     "jsonml"    : "latest",
-    "node-serialize" : "latest"
+    "node-serialize" : "latest", 
+    "deployd" : "latest"
   }
 }
