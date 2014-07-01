@@ -1,5 +1,5 @@
+var mysql      = require('mysql');
 var phantom = require('phantom');
-var deployd = require('deployd');
 var config = require('./config.json');
 var internalClient = require('deployd/lib/internal-client');
 var dpd = deployd(config.deployd);
@@ -11,20 +11,20 @@ var startLink = domain+"/Shop/Aisle/275?name=unsliced-bread";
 var phCount = -1;
 var mxRequests = 0;
 var pagesPlusEnd = [];
+var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'groscrapy',
+  password : 'groscrapy',
+  database : 'groscrapy',
+});
 
-dpd.listen();
 
-//start deployd
-dpd.sockets.on('connection', function (socket) {
-    ic = internalClient.build(process.server);
-    globalSock = socket;
-        
-
-    //start phantom
+connection.connect();
+//start phantom
     phantom.create(function(ph) {
         return countDownLevel1(ph);
     });
-});
+
 
 
 
@@ -49,17 +49,25 @@ function decPh(ph){
 
 function writeToFile(){
 
+    var values = [];
+    var longString = [];
     for(a in pagesPlusEnd){
-        ic.catgorylist.post({
-            "link": pagesPlusEnd[a].link, 
-            "maxpages": pagesPlusEnd[a].end}, 
-            function(result2, err) {}
-        );
+
+
+        values.push(pagesPlusEnd[a].link);
+        values.push(pagesPlusEnd[a].end);
+        longString.push("(?, ?)");
     }
+
+    var endString = longString.join(", ");
+
+    connection.query('INSERT INTO `groscrapy`.`catgorylist` (`link`, `maxpages`) VALUES '+endString+';', values, function(err, results) {
+      // ...
+    });
 
     
 
-    fs.writeFile("productListPages.json", JSON.stringify(pagesPlusEnd),null);
+    //fs.writeFile("productListPages.json", JSON.stringify(pagesPlusEnd),null);
 }
 
 function countDownLevel1(ph){
@@ -92,7 +100,7 @@ function countDownLevel1(ph){
                     }, function(result) {
                         //console.log(result);
                         //ph.exit();
-
+                        page.close();
                         for(a in result){
                             countDownLevel2(ph,result[a]);
                         }
@@ -131,6 +139,7 @@ function countDownLevel2(ph, newLevel){
                         }, function(result) {
                             //http://shop.countdown.co.nz/Shop/Browse/frozen-foods?page=1
                             //console.log(result, result._mx, result._link);
+                            page.close();
                             countDownLevel3(null, result._link, result._mx);
                             //ph.exit();
                             decPh(ph);

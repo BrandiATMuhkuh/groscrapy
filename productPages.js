@@ -141,6 +141,7 @@ function countDownLevel2(ph, link, nr, maxpages){
                     }, function(result) {
                         //console.log(link, nr, maxpages, result);
                         saveProductLinkInDb(result);
+                        page.close();
                         nr = nr +1;
                         if(nr <= maxpages){
                             countDownLevel2(ph, link, nr, maxpages);
