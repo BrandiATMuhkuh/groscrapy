@@ -8,6 +8,7 @@ var connection = mysql.createConnection({
 
 connection.connect();
 
+/*
 connection.query('SELECT * FROM catgorylist', function(err, rows, fields) {
   if (err) throw err;
 
@@ -24,4 +25,11 @@ connection.query('SELECT * FROM catgorylist', function(err, rows, fields) {
   console.log('The solution is: ', rows, rows.length);
 });
 
+*/
+
+connection.query('SELECT * FROM catgorylist', function(err, rows, fields) {
+  if (err) throw err;
+
+  console.log('The solution is: ', rows, rows.length);
+});
 connection.end();

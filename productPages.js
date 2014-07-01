@@ -5,6 +5,7 @@ $(".details-container").each(function(){
 console.log($(this).children().first().children().first().attr("href"))
 })
 */
+var mysql      = require('mysql');
 
 var phantom = require('phantom');
 var deployd = require('deployd');
@@ -20,10 +21,17 @@ var phCount = -1;
 var mxRequests = 0;
 var pagesPlusEnd = [];
 var catgorylist;
+var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'groscrapy',
+  password : 'groscrapy',
+  database : 'groscrapy',
+});
 
-
-dpd.listen();
-
+//dpd.listen();
+connection.connect();
+//getCaterlogList();
+/*
 //start deployd
 dpd.sockets.on('connection', function (socket) {
     ic = internalClient.build(process.server);
@@ -31,14 +39,24 @@ dpd.sockets.on('connection', function (socket) {
     
     getCaterlogList();
 });
+*/
 
+/*
 function getCaterlogList(){
     ic.catgorylist.get(function (result, err) {
         catgorylist= result;
         //console.log(result);
         startPhantom();
     });
-}
+}*/
+
+connection.query('SELECT * FROM catgorylist', function(err, rows, fields) {
+  if (err) throw err;
+
+  catgorylist= rows;
+  console.log('The solution is: ', rows, rows.length);
+  startPhantom();
+});
 
 function startPhantom(){
     phantom.create(function(ph) {
@@ -82,15 +100,23 @@ function countDownLevel1(ph, link, maxpages){
 }
 
 function saveProductLinkInDb(linkList) {
+
+    var values = [];
+    var longString = [];
     for(a in linkList){
-        console.log("link", linkList[a], "Stockcode", getParamFromUrl(linkList[a], "Stockcode"));
-    
-        ic.productlinks.post({
-            "company":"countdown",
-            "link":linkList[a],
-            "stockcode":getParamFromUrl(linkList[a], "Stockcode"),
-        },function(result2, err){});
+
+
+        values.push("countdown");
+        values.push(linkList[a]);
+        values.push(getParamFromUrl(linkList[a], "Stockcode"));
+        longString.push("(?, ?, ?)");
     }
+
+    var endString = longString.join(", ");
+
+    connection.query('INSERT INTO `groscrapy`.`productlinks` (`company`, `link`, `stockcode`) VALUES '+endString+';', values, function(err, results) {
+      // ...
+    });
 }
 
 function getParamFromUrl(qs, name) {
