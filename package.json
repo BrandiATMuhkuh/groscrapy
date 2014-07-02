@@ -9,7 +9,6 @@
     "cheerio"    : "latest",
     "jsonml"    : "latest",
     "node-serialize" : "latest", 
-    "deployd" : "latest",
     "mysql" : "latest"
   }
 }
