@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Upload Files</title>
+<script src="/siofu/client.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+
+<script type="text/javascript">
+var socket;
+var siofu;
+var companyName;
+var pathname = null;
+var submitCompanyButton;
+var submitCompanyName;
+document.addEventListener("DOMContentLoaded", function(){
+
+    // Initialize instances:
+    socket = io.connect();
+    siofu = new SocketIOFileUpload(socket);
+    companyName = document.getElementById("companyName");
+    submitCompanyButton = document.getElementById("submitCompany");
+    submitCompanyName = document.getElementById("submitCompanyName");
+    submitCompanyButton.disabled=true;
+    submitCompanyName.disabled=true;
+    // Configure the three ways that SocketIOFileUpload can read files:
+    //document.getElementById("upload_btn").addEventListener("click", siofu.prompt, false);
+    //siofu.listenOnInput(document.getElementById("upload_input"));
+    siofu.listenOnDrop(document.getElementById("file_drop"));
+
+    //siofu.listenOnSubmit(document.getElementById("my_button"), document.getElementById("file_input"));
+    // Do something when a file is uploaded:
+    
+    siofu.addEventListener("complete", function(event){
+        console.log(event.success);
+        console.log(event.file);
+    });
+
+    socket.on('fileUploaded', function(msg){
+      console.log(msg);
+      pathname = msg.pathname;
+      submitCompanyButton.disabled=false;
+      submitCompanyName.disabled=false;
+    });
+
+
+
+
+}, false);
+
+function submitCompany(){
+
+  if(pathname!=null && companyName.value != null){
+    socket.emit('submitCompany', {pathname:pathname, name: companyName.value});
+    console.log("submitCompany",companyName.value, pathname);
+    //pathname=null;
+    submitCompanyButton.disabled=true;
+
+
+  }else{
+    console.log("something is missing");
+  }
+
+}
+
+function getCompanyName(){
+
+  if(pathname!=null){
+    socket.emit('submitGetCompany', {pathname:pathname});
+  }else{
+    console.log("something is missing");
+  }
+
+}
+
+</script>
+
+</head>
+<body>
+
+<p><label>Company Name <input type="text" id="companyName"  /></label></p>
+<div id="file_drop" dropzone="copy" title="drop files for upload">Drop File</div>
+<button id="submitCompany" onclick="submitCompany()">Add to system</button> 
+<button id="submitCompanyName" onclick="getCompanyName()">get Company name</button> 
+
+<!--
+<p><button id="upload_btn">Prompt for File</button></p>
+<p><label>Choose File: <input type="file" id="upload_input"/></label></p>
+<label>Upload File: <input type="file" id="file_input" /></label>
+<button id="my_button">Upload File</button> -->
+
+</body>
+</html>

@@ -9,6 +9,15 @@
     "cheerio"    : "latest",
     "jsonml"    : "latest",
     "node-serialize" : "latest", 
-    "mysql" : "latest"
+    "mysql" : "latest",
+    "nodecr" : "latest",
+    "classifier" : "latest",
+    "express" : "latest",
+    "connect-busboy" : "latest",
+    "fs-extra" : "latest",
+    "formidable" : "latest",
+    "body-parser" : "latest",
+    "socket.io" : "latest",
+    "socketio-file-upload" : "latest"
   }
 }
